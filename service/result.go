@@ -9,13 +9,14 @@ import (
 type Answer struct {
 	filePath string
 	answer   string
+	Index    int
 }
 
 func (a Answer) GetAnswer() string {
 	return a.answer
 }
 
-func GetAnswerPokerCombination(filepath string, ch chan Answer) {
+func GetAnswerPokerCombination(filepath string, ch chan Answer, i int) {
 	cardsStrSlice, err := ReadFile(filepath)
 	if err != nil {
 
@@ -40,6 +41,7 @@ func GetAnswerPokerCombination(filepath string, ch chan Answer) {
 	answer := Answer{
 		filePath: filepath,
 		answer:   cardCombinationAnswer,
+		Index:    i,
 	}
 	ch <- answer
 }
