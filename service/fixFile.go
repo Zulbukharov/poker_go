@@ -39,6 +39,7 @@ func ConvertToCard(cards []string) []card.Card {
 				tempCard.Suit = string(c)
 			} else {
 				tempCard.Face = w[i:]
+				break
 			}
 		}
 		results = append(results, tempCard)
