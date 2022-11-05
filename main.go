@@ -56,7 +56,7 @@ func main() {
 	}
 	answerChan := make(chan service.Answer, 1)
 	for i := 0; i < 100; i++ {
-		go service.GetAnswerPokerCombination(fmt.Sprintf("dataset/dat%d.csv", i), answerChan)
+		go service.GetAnswerPokerCombination(fmt.Sprintf("dataset/dat%d.csv", i), answerChan, i)
 		//fmt.Println("sdsdlk")
 
 	}
@@ -66,7 +66,7 @@ func main() {
 		wg.Add(1)
 		answer := <-answerChan
 		go func() {
-			csvFile, err := os.Create(fmt.Sprintf("result/dat%d.csv", i))
+			csvFile, err := os.Create(fmt.Sprintf("result/dat%d.csv", answer.Index))
 			if err != nil {
 				log.Fatalf("failed creating file: %s", err)
 			}
