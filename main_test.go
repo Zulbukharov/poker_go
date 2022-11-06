@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/Kolesa-Education/kolesa-upgrade-homework-8/card"
+	"testing"
+
+	"github.com/manarakozhamuratova/pokerGo/card"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func Test_cardsToRepresentation(t *testing.T) {

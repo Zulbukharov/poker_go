@@ -53,6 +53,15 @@ func IsValidSuit(suit string) bool {
 	}
 }
 
+func IsValidUnicodeSuit(suit string) bool {
+	switch suit {
+	case SuitDiamondsUnicode, SuitClubsUnicode, SuitHeartsUnicode, SuitSpadesUnicode:
+		return true
+	default:
+		return false
+	}
+}
+
 func isValidFace(face string) bool {
 	switch face {
 	case Face2, Face3, Face4, Face5, Face6, Face7, Face8, Face9, Face10, FaceJack, FaceQueen, FaceKing, FaceAce:
@@ -100,8 +109,23 @@ func (c Card) ShortRepresentation() (string, error) {
 	return fmt.Sprintf("%s%s", unicode, c.Face), nil
 }
 
+func (c Card) String() string {
+	return fmt.Sprintf("%s%s", c.Suit, c.Face)
+}
+
 func New(suit string, face string) (*Card, error) {
 	if IsValidSuit(suit) && isValidFace(face) {
+		return &Card{
+			Suit: suit,
+			Face: face,
+		}, nil
+	} else {
+		return nil, errors.New(fmt.Sprintf("Cannot construct Card with suit %s, face %s", suit, face))
+	}
+}
+
+func NewWithUnicode(suit string, face string) (*Card, error) {
+	if IsValidUnicodeSuit(suit) && isValidFace(face) {
 		return &Card{
 			Suit: suit,
 			Face: face,

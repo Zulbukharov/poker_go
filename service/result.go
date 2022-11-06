@@ -1,56 +1,37 @@
 package service
 
 import (
-	"fmt"
-
-	"github.com/Kolesa-Education/kolesa-upgrade-homework-8/card"
+	"github.com/manarakozhamuratova/pokerGo/combination"
 )
 
-type Answer struct {
-	filePath string
-	answer   string
-}
-
-func (a Answer) GetAnswer() string {
-	return a.answer
-}
-
-func GetAnswerPokerCombination(filepath string, ch chan Answer) {
+func GetAnswerPokerCombination(filepath string, answerCh chan<- Answer, i int) {
 	cardsStrSlice, err := ReadFile(filepath)
 	if err != nil {
-
+		// errCh <- err
+		return
 	}
 
-	allComb := CombinationCards(cardsStrSlice)
+	allComb := combination.CombinationCards(cardsStrSlice)
 
 	var cardCombinationAnswer string
 
 	for _, comb := range allComb {
-		cards := ConvertToCard(comb)
-		cardComb := Combination{
-			cards: cards,
+		cardComb, err := combination.New(comb)
+		if err != nil {
+			// errCh <- err
+			return
 		}
-		if err := cardComb.getTrueCombination(); err != nil {
+		if err := cardComb.IsPokerCombination(); err != nil {
 			continue
 		}
-		cardCombinationAnswer += fmt.Sprintf("%s|%s\n", getCardsToStr(cards), cardComb.name)
+		cardCombinationAnswer += cardComb.String()
 		//fmt.Println(cardCombinationAnswer)
 	}
 
 	answer := Answer{
 		filePath: filepath,
 		answer:   cardCombinationAnswer,
+		index:    i,
 	}
-	ch <- answer
-}
-
-func getCardsToStr(cards []card.Card) string {
-	var result string
-
-	for i := range cards {
-		result += fmt.Sprintf("%s%s", cards[i].Suit, cards[i].Face)
-
-	}
-
-	return result
+	answerCh <- answer
 }

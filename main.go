@@ -8,8 +8,8 @@ import (
 	"os"
 	"sync"
 
-	"github.com/Kolesa-Education/kolesa-upgrade-homework-8/card"
-	"github.com/Kolesa-Education/kolesa-upgrade-homework-8/service"
+	"github.com/manarakozhamuratova/pokerGo/card"
+	"github.com/manarakozhamuratova/pokerGo/service"
 	"github.com/samber/lo"
 )
 
@@ -20,6 +20,18 @@ func cardsToRepresentations(cards []card.Card) []string {
 	})
 	return representations
 }
+
+// func errorHandler(errorsChan <-chan error, wg *sync.WaitGroup) {
+// 	for {
+// 		select {
+// 		case msg := <-errorsChan:
+// 			log.Println(msg)
+// 			wg.Done()
+// 		default:
+// 			continue
+// 		}
+// 	}
+// }
 
 func main() {
 	var seed int64 = 1665694295623135151
@@ -32,7 +44,6 @@ func main() {
 		//log.Printf("Iteration %d\n", i)
 		cardsInFile := random.Intn(7) + 10 // [10, 17]
 		cards := make([]card.Card, 0)
-
 		for j := 0; j < cardsInFile; j++ {
 			generatedCard, _ := card.Random(*random)
 			cards = append(cards, *generatedCard)
@@ -54,19 +65,19 @@ func main() {
 		_ = file.Close()
 
 	}
-	answerChan := make(chan service.Answer, 1)
+	answerChan := make(chan service.Answer, 100)
+	// errorsChan := make(chan error, 1)
+	// erro
 	for i := 0; i < 100; i++ {
-		go service.GetAnswerPokerCombination(fmt.Sprintf("dataset/dat%d.csv", i), answerChan)
-		//fmt.Println("sdsdlk")
-
+		go service.GetAnswerPokerCombination(fmt.Sprintf("dataset/dat%d.csv", i), answerChan, i)
 	}
 	var wg sync.WaitGroup
 
 	for i := 0; i < 100; i++ {
 		wg.Add(1)
-		answer := <-answerChan
+		answer := <-answerChan // 7
 		go func() {
-			csvFile, err := os.Create(fmt.Sprintf("result/dat%d.csv", i))
+			csvFile, err := os.Create(fmt.Sprintf("result/dat%d.csv", answer.Index()))
 			if err != nil {
 				log.Fatalf("failed creating file: %s", err)
 			}
@@ -75,6 +86,7 @@ func main() {
 			csvFile.Write([]byte(answer.GetAnswer()))
 		}()
 	}
+	// go errorHandler(errorsChan, &wg)
 	wg.Wait()
 
 }
